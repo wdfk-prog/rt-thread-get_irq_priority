@@ -6,7 +6,7 @@
  * @date 2022-12-27
  * @copyright Copyright (c) 2022
  * @attention CMSIS中提供了CMSIS access NVIC functions,方便不同芯片查询
- * @par 修改日志:
+ * @par Change log:
  * Date       Version Author  Description
  * 2022-12-27 1.0     HLY     first version
  */
@@ -60,6 +60,8 @@ static const char * const irq_name[] = {
     #include "inc/irq_stm32g4.h"
 #elif defined(SOC_SERIES_STM32G0)
     #include "inc/irq_stm32g0.h"
+#elif defined(SOC_SERIES_STM32L4)
+    #include "inc/irq_stm32l4.h"
 #elif defined(SOC_SERIES_STM32L0)
     #include "inc/irq_stm32l0.h"
 #else

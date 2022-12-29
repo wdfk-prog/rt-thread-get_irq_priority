@@ -6,7 +6,7 @@
  * @date 2022-12-27
  * @copyright Copyright (c) 2022
  * @attention 
- * @par –ﬁ∏ƒ»’÷æ:
+ * @par Change log
  * Date       Version Author  Description
  * 2022-12-27 1.0     HLY     first version
  */
@@ -22,13 +22,13 @@
   [8]   = "EXTI2_IRQn",             /*!< EXTI Line2 Interrupt                                              */
   [9]   = "EXTI3_IRQn",             /*!< EXTI Line3 Interrupt                                              */
   [10]  = "EXTI4_IRQn",             /*!< EXTI Line4 Interrupt                                              */
-  [11]  = "DMA1_Stream0_IRQn",      /*!< DMA1 Stream 0 global Interrupt                                    */
-  [12]  = "DMA1_Stream1_IRQn",      /*!< DMA1 Stream 1 global Interrupt                                    */
-  [13]  = "DMA1_Stream2_IRQn",      /*!< DMA1 Stream 2 global Interrupt                                    */
-  [14]  = "DMA1_Stream3_IRQn",      /*!< DMA1 Stream 3 global Interrupt                                    */
-  [15]  = "DMA1_Stream4_IRQn",      /*!< DMA1 Stream 4 global Interrupt                                    */
-  [16]  = "DMA1_Stream5_IRQn",      /*!< DMA1 Stream 5 global Interrupt                                    */
-  [17]  = "DMA1_Stream6_IRQn",      /*!< DMA1 Stream 6 global Interrupt                                    */
+  [11]  = "DMA1_Stream1_IRQn",      /*!< DMA1 Stream 1 global Interrupt                                    */
+  [12]  = "DMA1_Stream2_IRQn",      /*!< DMA1 Stream 2 global Interrupt                                    */
+  [13]  = "DMA1_Stream3_IRQn",      /*!< DMA1 Stream 3 global Interrupt                                    */
+  [14]  = "DMA1_Stream4_IRQn",      /*!< DMA1 Stream 4 global Interrupt                                    */
+  [15]  = "DMA1_Stream5_IRQn",      /*!< DMA1 Stream 5 global Interrupt                                    */
+  [16]  = "DMA1_Stream6_IRQn",      /*!< DMA1 Stream 6 global Interrupt                                    */
+  [17]  = "DMA1_Stream7_IRQn",      /*!< DMA1 Stream 7 global Interrupt                                    */
   [18]  = "ADC_IRQn",               /*!< ADC1 and  ADC2 global Interrupts                                  */
 #if defined (STM32F102x6) || defined (STM32F102xB)
   [19]  = "USB_HP_IRQn",            /*!< USB Device High Priority                             */
@@ -86,11 +86,11 @@
   [53]  = "UART5_IRQn",             /*!< UART5 global Interrupt                                            */
   [54]  = "TIM6_DAC_IRQn",          /*!< TIM6 global and DAC1&2 underrun error  interrupts                 */
   [55]  = "TIM7_IRQn",              /*!< TIM7 global interrupt                                             */
-  [56]  = "DMA2_Stream0_IRQn",      /*!< DMA2 Stream 0 global Interrupt                                    */
-  [57]  = "DMA2_Stream1_IRQn",      /*!< DMA2 Stream 1 global Interrupt                                    */
-  [58]  = "DMA2_Stream2_IRQn",      /*!< DMA2 Stream 2 global Interrupt                                    */
-  [59]  = "DMA2_Stream3_IRQn",      /*!< DMA2 Stream 3 global Interrupt                                    */
-  [60]  = "DMA2_Stream4_IRQn",      /*!< DMA2 Stream 4 global Interrupt                                    */
+  [56]  = "DMA2_Stream1_IRQn",      /*!< DMA2 Stream 1 global Interrupt                                    */
+  [57]  = "DMA2_Stream2_IRQn",      /*!< DMA2 Stream 2 global Interrupt                                    */
+  [58]  = "DMA2_Stream3_IRQn",      /*!< DMA2 Stream 3 global Interrupt                                    */
+  [59]  = "DMA2_Stream4_IRQn",      /*!< DMA2 Stream 4 global Interrupt                                    */
+  [60]  = "DMA2_Stream5_IRQn",      /*!< DMA2 Stream 5 global Interrupt                                    */
   [61]  = "ETH_IRQn",               /*!< Ethernet global Interrupt                                         */
   [62]  = "ETH_WKUP_IRQn",          /*!< Ethernet Wakeup through EXTI line Interrupt                       */
   [63]  = "CAN2_TX_IRQn ",          /*!< CAN2 TX Interrupt                                                 */
