@@ -1,12 +1,12 @@
 /**
  * @file get_irq.c
- * @brief 
+ * @brief
  * @author HLY (1425075683@qq.com)
  * @version 1.0
  * @date 2022-12-27
  * @copyright Copyright (c) 2022
- * @attention CMSISÖĞÌá¹©ÁËCMSIS access NVIC functions,·½±ã²»Í¬Ğ¾Æ¬²éÑ¯
- * @par ĞŞ¸ÄÈÕÖ¾:
+ * @attention CMSISä¸­æä¾›äº†CMSIS access NVIC functions,æ–¹ä¾¿ä¸åŒèŠ¯ç‰‡æŸ¥è¯¢
+ * @par ä¿®æ”¹æ—¥å¿—:
  * Date       Version Author  Description
  * 2022-12-27 1.0     HLY     first version
  */
@@ -16,16 +16,18 @@
 #include <rtthread.h>
 #include <stdlib.h>
 #include "board.h"
+
+#ifdef PKG_USING_GET_IRQ_PRIORITY
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  rt_uint8_t ldx;       //IRQ±àºÅ
-  rt_uint8_t priotity;  //ÓÅÏÈ¼¶
+  rt_uint8_t ldx;       //IRQç¼–å·
+  rt_uint8_t priotity;  //ä¼˜å…ˆçº§
 }type;
 /* Private define ------------------------------------------------------------*/
 #define irq_printf rt_kprintf
 /* Private macro -------------------------------------------------------------*/
-#define NAME_LEN 30 //ÖĞ¶ÏÃû³Æ³¤¶È
+#define NAME_LEN 30 //ä¸­æ–­åç§°é•¿åº¦
 /* Private variables ---------------------------------------------------------*/
 static const char * const exception_name[] = {
 /******  Cortex-M Processor Exceptions Numbers *****************************************************************/
@@ -76,7 +78,7 @@ rt_inline void nvic_irq_header(void)
     irq_printf("--- --------"); object_split('-',NAME_LEN - 8);irq_printf(" - - - --------\n");
 }
 /**
-  * @brief  »ñÈ¡exceptionĞÅÏ¢.
+  * @brief  è·å–exceptionä¿¡æ¯.
   * @param  None.
   * @retval None.
   * @note   None.
@@ -96,7 +98,7 @@ static void nvic_exception_get(void)
     }
 }
 /**
-  * @brief  »ñÈ¡NVICĞÅÏ¢.
+  * @brief  è·å–NVICä¿¡æ¯.
   * @param  None.
   * @retval None.
   * @note   None.
@@ -110,7 +112,7 @@ static void nvic_irq_get(rt_uint8_t i)
     irq_printf("    %02d\n",NVIC_GetPriority((IRQn_Type)i));
 }
 /**
-  * @brief  »ñÈ¡NVICĞÅÏ¢,ÒÔÖĞ¶Ï±àºÅÅÅĞò.
+  * @brief  è·å–NVICä¿¡æ¯,ä»¥ä¸­æ–­ç¼–å·æ’åº.
   * @param  None.
   * @retval None.
   * @note   None.
@@ -127,7 +129,7 @@ static void nvic_irq_get_idx(void)
     }
 }
 /**
-  * @brief  »ñÈ¡NVICĞÅÏ¢,ÒÔÖĞ¶ÏÓÅÏÈ¼¶´ÓµÍµ½¸ßÅÅĞò.
+  * @brief  è·å–NVICä¿¡æ¯,ä»¥ä¸­æ–­ä¼˜å…ˆçº§ä»ä½åˆ°é«˜æ’åº.
   * @param  None.
   * @retval None.
   * @note   None.
@@ -143,15 +145,15 @@ static void nvic_irq_get_priotity(void)
         if(NVIC_GetEnableIRQ((IRQn_Type)i))
         {
           buff[i].ldx      = i;
-          buff[i].priotity = NVIC_GetPriority((IRQn_Type)i) + 1;//+1ÅÅ³ıÎ´Ê¹ÄÜ0ÓÅÏÈ¼¶
+          buff[i].priotity = NVIC_GetPriority((IRQn_Type)i) + 1;//+1æ’é™¤æœªä½¿èƒ½0ä¼˜å…ˆçº§
         }
     }
-    //ÅÅĞò
+    //æ’åº
     for (rt_uint8_t i = 0; i < IRQ_LEN - 1; i++)
     {
         for (rt_uint8_t j = 0; j < IRQ_LEN - 1 - i; j++)
         {
-            if (buff[j].priotity > buff[j + 1].priotity) 
+            if (buff[j].priotity > buff[j + 1].priotity)
             {
                 temp = buff[j].priotity;
                 buff[j].priotity = buff[j + 1].priotity;
@@ -176,12 +178,12 @@ static void nvic_irq_get_priotity(void)
 }
 #if defined(RT_USING_MSH) || defined(RT_USING_FINSH)
 /**
-  * @brief  MSHÃüÁî
+  * @brief  MSHå‘½ä»¤
   * @param  None
   * @retval None
   * @note   None
 */
-static void nvic_irq_msh(uint8_t argc, char **argv) 
+static void nvic_irq_msh(uint8_t argc, char **argv)
 {
 #define IRQ_CMD_IDX               0
 #define IRQ_CMD_PRIOTITY          1
@@ -218,7 +220,7 @@ static void nvic_irq_msh(uint8_t argc, char **argv)
         {
             IRQn_Type IRQn;
             uint32_t priority;
-            if(argc <= 3) 
+            if(argc <= 3)
             {
                 irq_printf("Usage: nvic_irq set [IRQn] [priority] --Sets the NVIC IRQ level.\n");
                 return;
@@ -251,3 +253,4 @@ static void nvic_irq_msh(uint8_t argc, char **argv)
 }
 MSH_CMD_EXPORT_ALIAS(nvic_irq_msh,nvic_irq,nvic_irq command.);
 #endif /*RT_USING_MSH*/
+#endif /* PKG_USING_GET_IRQ_PRIORITY */
