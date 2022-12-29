@@ -21,15 +21,15 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  rt_uint8_t ldx;       //IRQ编号
-  rt_uint8_t priotity;  //优先级
+  rt_uint8_t ldx;           //IRQ编号
+  rt_uint8_t priotity : 4;  //优先级
 }type;
 /* Private define ------------------------------------------------------------*/
 #define irq_printf rt_kprintf
 /* Private macro -------------------------------------------------------------*/
 #define NAME_LEN 30 //中断名称长度
 /* Private variables ---------------------------------------------------------*/
-static const char * const exception_name[] = {
+static const char * const exception_type_name[] = {
 /******  Cortex-M Processor Exceptions Numbers *****************************************************************/
   [-NonMaskableInt_IRQn]   = "NonMaskableInt_IRQn",   /*!< 2 Non Maskable Interrupt                                          */
   [-HardFault_IRQn]        = "HardFault_IRQn",        /*!< 3 Cortex-M Hard Fault Interrupt                                   */
@@ -41,7 +41,7 @@ static const char * const exception_name[] = {
   [-PendSV_IRQn]           = "PendSV_IRQn",           /*!< 14 Cortex-M Pend SV Interrupt                                     */
   [-SysTick_IRQn]          = "SysTick_IRQn",          /*!< 15 Cortex-M System Tick Interrupt                                 */
 };
-static const char * const nvic_name[] = {
+static const char * const irq_name[] = {
 #if defined(SOC_SERIES_STM32H7)
     #include "inc/irq_stm32h7.h"
 #elif defined(SOC_SERIES_STM32F7)
@@ -66,7 +66,7 @@ static const char * const nvic_name[] = {
     #error "Unsupported chips"
 #endif
 };
-#define IRQ_LEN sizeof(nvic_name) / sizeof(nvic_name[1])
+#define IRQ_LEN sizeof(irq_name) / sizeof(irq_name[1])
 /* Private function prototypes -----------------------------------------------*/
 rt_inline void object_split(char c,int len)
 {
@@ -78,23 +78,23 @@ rt_inline void nvic_irq_header(void)
     irq_printf("--- --------"); object_split('-',NAME_LEN - 8);irq_printf(" - - - --------\n");
 }
 /**
-  * @brief  获取exception信息.
+  * @brief  获取exception type信息.
   * @param  None.
   * @retval None.
   * @note   None.
 */
-static void nvic_exception_get(void)
+static void nvic_exception_type_get(void)
 {
-    irq_printf("num exception name"); object_split(' ',NAME_LEN - 13); irq_printf("E P A Priotity\n");
-    irq_printf("--- --------------"); object_split('-',NAME_LEN - 14);irq_printf(" - - - --------\n");
+    irq_printf("num exception_type name"); object_split(' ',NAME_LEN - 18); irq_printf("E P A Priotity\n");
+    irq_printf("--- -------------------"); object_split('-',NAME_LEN - 19);irq_printf(" - - - --------\n");
 
-    for (rt_int32_t i = NonMaskableInt_IRQn; i <= 1; i++)
+    for (rt_int32_t i = -NonMaskableInt_IRQn; i > 0; i--)
     {
-        if(exception_name[-i] == RT_NULL)
+        if(exception_type_name[i] == RT_NULL)
           continue;
-        irq_printf("%3d ",16 + i);
-        irq_printf("%-*.*s X X X",NAME_LEN,NAME_LEN,exception_name[-i]);
-        irq_printf("    %02d\n",NVIC_GetPriority((IRQn_Type)+i));
+        irq_printf("%3d ",-i);
+        irq_printf("%-*.*s X X X",NAME_LEN,NAME_LEN,exception_type_name[i]);
+        irq_printf("    %02d\n",NVIC_GetPriority((IRQn_Type)-i));
     }
 }
 /**
@@ -106,7 +106,7 @@ static void nvic_exception_get(void)
 static void nvic_irq_get(rt_uint8_t i)
 {
     irq_printf("%3d ",i);
-    irq_printf("%-*.*s 1",NAME_LEN,NAME_LEN,nvic_name[i]);
+    irq_printf("%-*.*s 1",NAME_LEN,NAME_LEN,irq_name[i]);
     NVIC_GetPendingIRQ((IRQn_Type)i) ? irq_printf(" 1") : irq_printf(" 0");
     NVIC_GetActive((IRQn_Type)i)     ? irq_printf(" 1") : irq_printf(" 0");
     irq_printf("    %02d\n",NVIC_GetPriority((IRQn_Type)i));
@@ -200,8 +200,8 @@ static void nvic_irq_msh(uint8_t argc, char **argv)
 
     if (argc < 2)
     {
-        nvic_exception_get();
-        irq_printf("\n\n");
+        nvic_exception_type_get();
+        irq_printf("\n");
         nvic_irq_get_idx();
     }
     else
