@@ -32,12 +32,18 @@ typedef struct
 static const char * const exception_type_name[] = {
 /******  Cortex-M Processor Exceptions Numbers *****************************************************************/
   [-NonMaskableInt_IRQn]   = "NonMaskableInt_IRQn",   /*!< 2 Non Maskable Interrupt                                          */
+#if !defined(SOC_SERIES_STM32F4) || !defined(SOC_SERIES_STM32F7) //Cortex-M4
   [-HardFault_IRQn]        = "HardFault_IRQn",        /*!< 3 Cortex-M Hard Fault Interrupt                                   */
+#endif /* !defined(SOC_SERIES_STM32F4) || !defined(SOC_SERIES_STM32F7) */
   [-MemoryManagement_IRQn] = "MemoryManagement_IRQn", /*!< 4 Cortex-M Memory Management Interrupt                            */
+#if !defined(SOC_SERIES_STM32F0) || !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0)//Cortex-M0
   [-BusFault_IRQn]         = "BusFault_IRQn",         /*!< 5 Cortex-M Bus Fault Interrupt                                    */
   [-UsageFault_IRQn]       = "UsageFault_IRQn",       /*!< 6 Cortex-M Usage Fault Interrupt                                  */
+#endif /* !defined(SOC_SERIES_STM32F0) || !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0) */
   [-SVCall_IRQn]           = "SVCall_IRQn",           /*!< 11 Cortex-M SV Call Interrupt                                     */
+#if !defined(SOC_SERIES_STM32F0) || !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0)//Cortex-M0
   [-DebugMonitor_IRQn]     = "DebugMonitor_IRQn",     /*!< 12 Cortex-M Debug Monitor Interrupt                               */
+#endif /* !defined(SOC_SERIES_STM32F0) || !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0) */
   [-PendSV_IRQn]           = "PendSV_IRQn",           /*!< 14 Cortex-M Pend SV Interrupt                                     */
   [-SysTick_IRQn]          = "SysTick_IRQn",          /*!< 15 Cortex-M System Tick Interrupt                                 */
 };
