@@ -70,12 +70,16 @@ get_irq_priority package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 - get_irq_priority依赖于控制台而工作，使用本组件时请确认已注册了控制台设备。
 - get_irq_priority目前仅支持 Cortex®-M 内核. Cortex®-M 内核中仅对stm32系列做了支持.
 - get_irq_priority提供了3种模式，默认查询模式(以irq编号排序),中断优先级查询模式(以中断优先级从低到高排序),设置模式。
-- env中Kconfig文件添加了"select SOC_FAMILY_STM32 ".若stm32芯片无显示该软件包.可在任一Kconfig文件中编写如下代码,以显示软件包
+- 若stm32芯片无显示该软件包.可采用下述解决办法
+env中Kconfig文件添加了"select SOC_FAMILY_STM32 ".
+可在任一Kconfig文件中编写如下代码,以显示软件包.
 ```Kconfig
      config SOC_FAMILY_STM32
         bool
         default y
 ```
+之后需运行env环境,并保存编译后,可在rtconfig.h中找到如下宏定义
+![image](https://user-images.githubusercontent.com/66928464/216056533-1e1205b3-cc81-4c21-96a5-f12063260a65.png)
 
 ## 4.测试验证
 
