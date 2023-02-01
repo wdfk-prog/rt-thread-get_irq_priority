@@ -56,7 +56,7 @@ get_irq_priority package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 ### 2.1获取组件
 
 - **方式1：**
-  1.下载[get_irq_priority软件包](https://github.com/wdfk-prog/rt-thread-get_irq_priority[)，并将软件包`get_irq_priority`文件夹复制到工程原码目录下
+  1.下载[get_irq_priority软件包](https://github.com/wdfk-prog/rt-thread-get_irq_priority)，并将软件包`get_irq_priority`文件夹复制到工程原码目录下
   2.将软件包中get_irq.c加入项目工程中
   3.根据芯片定义对应宏指令
 
