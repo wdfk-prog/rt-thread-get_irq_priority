@@ -61,7 +61,7 @@ get_irq_priority package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
   3.根据芯片定义对应宏指令
 
 - **方式2：**
-  通过 *Env配置工具* 或 *RT-Thread studio* 开启软件包，根据需要配置各项参数；配置路径为 *RT-Thread online packages -> system packages -> get_irq_priority* 
+  通过 *Env配置工具* 或 *RT-Thread studio* 开启软件包，根据需要配置各项参数；配置路径为 *RT-Thread online packages -> miscellaneous packages -> get_irq_priority* 
 
 ## 3.注意事项
 
