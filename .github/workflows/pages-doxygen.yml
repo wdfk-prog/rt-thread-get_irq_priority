@@ -1,0 +1,64 @@
+name: Publish Doxygen to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/**'
+      - 'inc/**'
+      - 'docs/**'
+      - '.github/workflows/pages-doxygen.yml'
+      - 'Doxyfile'
+      - 'readme.md'
+      - 'README_zn.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Create Doxygen output directory
+        run: mkdir -p build/doxygen
+
+      - name: Generate Doxygen site
+        run: doxygen Doxyfile
+
+      - name: Disable Jekyll processing
+        run: touch build/doxygen/html/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/doxygen/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,17 +1,18 @@
 /**
  * @file irq_stm32g4.h
- * @brief
+ * @brief Provide IRQ name table entries for the STM32G4 family.
+ * @details This file is intentionally included as a data fragment by
+ *          `src/get_irq.c` to populate the `irq_name[]` lookup table.
+ *          It is not a standalone public header.
  * @author HLY (1425075683@qq.com)
  * @version 1.0
  * @date 2022-12-27
  * @copyright Copyright (c) 2022
- * @attention
- * @par Change log:
- * Date       Version Author  Description
- * 2022-12-27 1.0     HLY     first version
+ * @note The designated initializers in this file must remain aligned with the
+ *       IRQ numbers defined by the corresponding STM32 device headers.
  */
 /* Exported constants --------------------------------------------------------*/
-  [0]   = "WWDG_IRQn",              /*!< Window WatchDog Interrupt ( wwdg1_it, wwdg2_it)                   */
+[0]   = "WWDG_IRQn",              /*!< Window WatchDog Interrupt ( wwdg1_it, wwdg2_it)                   */
   [1]   = "PVD_PVM_IRQn",           /*!< PVD/PVM through EXTI Line detection Interrupt                     */
   [2]   = "RTC_TAMP_LSECSS_IRQn"    /*!< RTC Tamper and TimeStamp and RCC LSE CSS interrupts through the EXTI               */
   [3]   = "RTC_WKUP_IRQn",          /*!< RTC Wakeup interrupt through the EXTI line                        */

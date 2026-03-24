@@ -1,17 +1,18 @@
 /**
  * @file irq_stm32f0.h
- * @brief
+ * @brief Provide IRQ name table entries for the STM32F0 family.
+ * @details This file is intentionally included as a data fragment by
+ *          `src/get_irq.c` to populate the `irq_name[]` lookup table.
+ *          It is not a standalone public header.
  * @author HLY (1425075683@qq.com)
  * @version 1.0
  * @date 2022-12-27
  * @copyright Copyright (c) 2022
- * @attention
- * @par Change log:
- * Date       Version Author  Description
- * 2022-12-27 1.0     HLY     first version
+ * @note The designated initializers in this file must remain aligned with the
+ *       IRQ numbers defined by the corresponding STM32 device headers.
  */
 /* Exported constants --------------------------------------------------------*/
-  [0]   = "WWDG_IRQn",                /*!< Window WatchDog Interrupt                               */
+[0]   = "WWDG_IRQn",                /*!< Window WatchDog Interrupt                               */
   [1]   = "PVD_VDDIO2_IRQn",          /*!< PVD & VDDIO2 Interrupt through EXTI Lines 16 and 31             */
   [2]   = "RTC_IRQn",                 /*!< RTC Interrupt through EXTI Lines 17, 19 and 20                  */
   [3]   = "FLASH_IRQn",               /*!< FLASH global Interrupt                                          */
