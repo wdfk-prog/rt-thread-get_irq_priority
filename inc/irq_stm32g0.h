@@ -38,7 +38,7 @@
   [23]  = "I2C1_IRQn",                /*!< I2C1 Event Interrupt & EXTI Line23 Interrupt (I2C1 wakeup)      */
   [24]  = "I2C2_3_IRQn",              /*!< I2C2, I2C3 Interrupt (combined with EXTI 24 and EXTI 22)        */
   [25]  = "SPI1_IRQn",                /*!< SPI1 global Interrupt                                           */
-  [26]  = "SPI2_3_IRQn"               /*!< SPI2/I2S2, SPI3/I2S3 Interrupt                                  */
+  [26]  = "SPI2_3_IRQn",              /*!< SPI2/I2S2, SPI3/I2S3 Interrupt                                  */
   [27]  = "USART1_IRQn",              /*!< USART1 global Interrupt & EXTI Line25 Interrupt (USART1 wakeup) */
   [28]  = "USART2_LPUART2_IRQn",      /*!< USART2 + LPUART2 Interrupt                                      */
   [29]  = "USART3_4_5_6_LPUART1_IRQn",/*!< USART3, USART4, USART5, USART6, LPUART1 globlal Interrupts (combined with EXTI 28) */

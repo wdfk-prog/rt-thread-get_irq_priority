@@ -15,7 +15,7 @@
 [0]   = "WWDG_IRQn",              /*!< Window WatchDog Interrupt ( wwdg1_it, wwdg2_it)                   */
 #if defined (STM32H7A3xx) ||defined (STM32H7A3xxQ) || defined (STM32H7B3xx) || defined (STM32H7B3xxQ) || defined (STM32H7B0xx)  || defined (STM32H7B0xxQ)
   [1]   = "PVD_PVM_IRQn",           /*!< PVD/PVM through EXTI Line detection Interrupt                     */
-  [2]   = "RTC_TAMP_STAMP_CSS_LSE_IRQn"/*!< Tamper, TimeStamp, CSS and LSE interrupts through the EXTI line*/
+  [2]   = "RTC_TAMP_STAMP_CSS_LSE_IRQn", /*!< Tamper, TimeStamp, CSS and LSE interrupts through the EXTI line*/
 #else
   [1]   = "PVD_AVD_IRQn",           /*!< PVD/AVD through EXTI Line detection Interrupt                     */
   [2]   = "TAMP_STAMP_IRQn",        /*!< Tamper and TimeStamp interrupts through the EXTI line             */
@@ -187,7 +187,7 @@
   [141] = "LPTIM5_IRQn",            /*!< LP TIM5 global interrupt                                          */
 #elif defined (STM32H7A3xx) ||defined (STM32H7A3xxQ) || defined (STM32H7B3xx) || defined (STM32H7B3xxQ) || defined (STM32H7B0xx)  || defined (STM32H7B0xxQ)
   [140] = "UART9_IRQn",             /*!< UART9 global interrupt                                            */
-  [141] = "USART10_IRQn"            /*!< USART10 global interrupt                                          */
+  [141] = "USART10_IRQn",              /*!< USART10 global interrupt                                          */
 #endif /* defined (STM32H735xx) || defined (STM32H733xx) || defined (STM32H730xx) || defined (STM32H730xxQ) || defined (STM32H725xx) || defined (STM32H723xx) */
   [142] = "LPUART1_IRQn",           /*!< LP UART1 interrupt                                                */
   [143] = "WWDG_RST_IRQn",          /*!< Window Watchdog reset interrupt (exti_d2_wwdg_it, exti_d1_wwdg_it)*/

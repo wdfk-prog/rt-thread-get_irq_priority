@@ -41,27 +41,41 @@ typedef struct
 #define NAME_LEN 30
 
 /**
- * @brief Map Cortex-M system exception numbers to printable names.
- * @details The array is indexed by the negated exception number so that the
- *          existing exception iteration logic can reuse the same lookup table.
+ * @brief Positive table index for Cortex-M Non-Maskable Interrupt.
+ */
+#define GET_IRQ_EXCEPTION_NMI        14
+
+/**
+ * @brief Positive table index for Cortex-M HardFault.
+ */
+#define GET_IRQ_EXCEPTION_HARDFAULT  13
+
+/**
+ * @brief Positive table index for Cortex-M SysTick.
+ */
+#define GET_IRQ_EXCEPTION_SYSTICK    1
+
+/**
+ * @brief Map Cortex-M system exception IRQn indexes to printable names.
+ * @details The array is indexed by the absolute value of the negative
+ *          `IRQn_Type` value. Numeric indexes keep HardFault portable across
+ *          STM32 CMSIS device headers that omit `HardFault_IRQn`.
  */
 static const char * const exception_type_name[] = {
 /******  Cortex-M Processor Exceptions Numbers *****************************************************************/
-  [-NonMaskableInt_IRQn]   = "NonMaskableInt_IRQn",   /*!< 2 Non Maskable Interrupt                                          */
-#if !defined(SOC_SERIES_STM32F4) && !defined(SOC_SERIES_STM32F7)
-  [-HardFault_IRQn]        = "HardFault_IRQn",        /*!< 3 Cortex-M Hard Fault Interrupt                                   */
-#endif /* !defined(SOC_SERIES_STM32F4) && !defined(SOC_SERIES_STM32F7) */
-  [-MemoryManagement_IRQn] = "MemoryManagement_IRQn", /*!< 4 Cortex-M Memory Management Interrupt                            */
-#if !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0)
-  [-BusFault_IRQn]         = "BusFault_IRQn",         /*!< 5 Cortex-M Bus Fault Interrupt                                    */
-  [-UsageFault_IRQn]       = "UsageFault_IRQn",       /*!< 6 Cortex-M Usage Fault Interrupt                                  */
-#endif /* !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0) */
-  [-SVCall_IRQn]           = "SVCall_IRQn",           /*!< 11 Cortex-M SV Call Interrupt                                     */
-#if !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0)
-  [-DebugMonitor_IRQn]     = "DebugMonitor_IRQn",     /*!< 12 Cortex-M Debug Monitor Interrupt                               */
-#endif /* !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) || !defined(SOC_SERIES_STM32L0) */
-  [-PendSV_IRQn]           = "PendSV_IRQn",           /*!< 14 Cortex-M Pend SV Interrupt                                     */
-  [-SysTick_IRQn]          = "SysTick_IRQn",          /*!< 15 Cortex-M System Tick Interrupt                                 */
+  [GET_IRQ_EXCEPTION_NMI]       = "NonMaskableInt_IRQn",   /*!< 2 Non Maskable Interrupt                                          */
+  [GET_IRQ_EXCEPTION_HARDFAULT] = "HardFault_IRQn",        /*!< 3 Cortex-M Hard Fault Interrupt                                   */
+#if !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) && !defined(SOC_SERIES_STM32L0)
+  [12]                          = "MemoryManagement_IRQn", /*!< 4 Cortex-M Memory Management Interrupt                            */
+  [11]                          = "BusFault_IRQn",         /*!< 5 Cortex-M Bus Fault Interrupt                                    */
+  [10]                          = "UsageFault_IRQn",       /*!< 6 Cortex-M Usage Fault Interrupt                                  */
+#endif /* !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) && !defined(SOC_SERIES_STM32L0) */
+  [5]                           = "SVCall_IRQn",           /*!< 11 Cortex-M SV Call Interrupt                                     */
+#if !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) && !defined(SOC_SERIES_STM32L0)
+  [4]                           = "DebugMonitor_IRQn",     /*!< 12 Cortex-M Debug Monitor Interrupt                               */
+#endif /* !defined(SOC_SERIES_STM32F0) && !defined(SOC_SERIES_STM32G0) && !defined(SOC_SERIES_STM32L0) */
+  [2]                           = "PendSV_IRQn",           /*!< 14 Cortex-M Pend SV Interrupt                                     */
+  [GET_IRQ_EXCEPTION_SYSTICK]   = "SysTick_IRQn",          /*!< 15 Cortex-M System Tick Interrupt                                 */
 };
 
 /**
@@ -134,14 +148,39 @@ static void nvic_exception_type_get(void)
     irq_printf("num exception_type name"); object_split(' ', NAME_LEN - 18); irq_printf("E P A Priotity\n");
     irq_printf("--- -------------------"); object_split('-', NAME_LEN - 19); irq_printf(" - - - --------\n");
 
-    for (rt_int32_t i = -NonMaskableInt_IRQn; i > 0; i--)
+    for (rt_int32_t i = GET_IRQ_EXCEPTION_NMI; i >= GET_IRQ_EXCEPTION_SYSTICK; i--)
     {
         if (exception_type_name[i] == RT_NULL)
             continue;
-        irq_printf("%3d ", -i);
+        irq_printf("%3d ", i);
         irq_printf("%-*.*s X X X", NAME_LEN, NAME_LEN, exception_type_name[i]);
-        irq_printf("    %02d\n", NVIC_GetPriority((IRQn_Type)-i));
+        if (i >= GET_IRQ_EXCEPTION_HARDFAULT)
+        {
+            irq_printf("    --\n");
+        }
+        else
+        {
+            irq_printf("    %02d\n", NVIC_GetPriority((IRQn_Type)-i));
+        }
     }
+}
+
+/**
+ * @brief Return whether an external IRQ is active.
+ * @param IRQn External IRQ number to query.
+ * @return RT_TRUE when the IRQ is active, otherwise RT_FALSE.
+ * @details Cortex-M0 and Cortex-M0+ CMSIS cores do not provide `NVIC_GetActive()`.
+ *          Report inactive on those cores so the package remains buildable for
+ *          STM32F0, STM32G0, and STM32L0 compile profiles.
+ */
+static rt_bool_t nvic_irq_is_active(IRQn_Type IRQn)
+{
+#if defined(__CORTEX_M) && (__CORTEX_M == 0U)
+    RT_UNUSED(IRQn);
+    return RT_FALSE;
+#else
+    return NVIC_GetActive(IRQn) ? RT_TRUE : RT_FALSE;
+#endif /* defined(__CORTEX_M) && (__CORTEX_M == 0U) */
 }
 
 /**
@@ -154,8 +193,8 @@ static void nvic_irq_get(rt_uint8_t i)
 {
     irq_printf("%3d ", i);
     irq_printf("%-*.*s 1", NAME_LEN, NAME_LEN, irq_name[i]);
-    NVIC_GetPendingIRQ((IRQn_Type)i) ? irq_printf(" 1") : irq_printf(" 0");
-    NVIC_GetActive((IRQn_Type)i)     ? irq_printf(" 1") : irq_printf(" 0");
+    NVIC_GetPendingIRQ((IRQn_Type)i)  ? irq_printf(" 1") : irq_printf(" 0");
+    nvic_irq_is_active((IRQn_Type)i)  ? irq_printf(" 1") : irq_printf(" 0");
     irq_printf("    %02d\n", NVIC_GetPriority((IRQn_Type)i));
 }
 

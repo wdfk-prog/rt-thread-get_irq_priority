@@ -38,7 +38,7 @@
   [23]  = "I2C1_IRQn",                /*!< I2C1 Event Interrupt                                            */
   [24]  = "I2C2_IRQn",                /*!< I2C2 Interrupt                                                  */
   [25]  = "SPI1_IRQn",                /*!< SPI1 global Interrupt                                           */
-  [26]  = "SPI2_IRQn"                 /*!< SPI2 Interrupt                                                  */
+  [26]  = "SPI2_IRQn",                 /*!< SPI2 Interrupt                                                  */
   [27]  = "USART1_IRQn",              /*!< USART1 global Interrupt & EXTI Line25 Interrupt (USART1 wakeup) */
   [28]  = "USART2_LPUART2_IRQn",      /*!< USART2 + LPUART2 Interrupt                                      */
   [29]  = "AES_RNG_LPUART1_IRQn",     /*!< AES and RNG and LPUART1 Interrupts                              */

@@ -14,7 +14,7 @@
 /* Exported constants --------------------------------------------------------*/
 [0]   = "WWDG_IRQn",              /*!< Window WatchDog Interrupt ( wwdg1_it, wwdg2_it)                   */
   [1]   = "PVD_PVM_IRQn",           /*!< PVD/PVM through EXTI Line detection Interrupt                     */
-  [2]   = "RTC_TAMP_LSECSS_IRQn"    /*!< RTC Tamper and TimeStamp and RCC LSE CSS interrupts through the EXTI               */
+  [2]   = "RTC_TAMP_LSECSS_IRQn",    /*!< RTC Tamper and TimeStamp and RCC LSE CSS interrupts through the EXTI               */
   [3]   = "RTC_WKUP_IRQn",          /*!< RTC Wakeup interrupt through the EXTI line                        */
   [4]   = "FLASH_IRQn",             /*!< FLASH global Interrupt                                            */
   [5]   = "RCC_IRQn",               /*!< RCC global Interrupt                                              */

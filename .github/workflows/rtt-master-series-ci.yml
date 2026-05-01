@@ -1,0 +1,218 @@
+name: RT-Thread master STM32 series CI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/**'
+      - 'inc/**'
+      - 'SConscript'
+      - '.github/workflows/rtt-master-series-ci.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'inc/**'
+      - 'SConscript'
+      - '.github/workflows/rtt-master-series-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rtt-master-series-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RTTHREAD_REF: master
+  RTTHREAD_ENV_REF: master
+  PACKAGE_NAME: get_irq_priority
+
+jobs:
+  cppcheck-report:
+    name: cppcheck report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout package
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cppcheck
+
+      - name: Run cppcheck
+        shell: bash
+        run: |
+          cppcheck \
+            --enable=warning,style,performance,portability \
+            --inconclusive \
+            --std=c11 \
+            --force \
+            --quiet \
+            --suppress=missingInclude \
+            --suppress=missingIncludeSystem \
+            -I. \
+            -Iinc \
+            src \
+            2> >(tee cppcheck.txt >&2)
+
+      - name: Upload cppcheck report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: cppcheck.txt
+          if-no-files-found: error
+
+  build-rtt-stm32-series:
+    name: build ${{ matrix.series }} / ${{ matrix.bsp }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - series: STM32F0
+            bsp: stm32f072-st-nucleo
+          - series: STM32F1
+            bsp: stm32f103-blue-pill
+          - series: STM32F2
+            bsp: stm32f207-st-nucleo
+          - series: STM32F3
+            bsp: stm32f302-st-nucleo
+          - series: STM32F4
+            bsp: stm32f407-st-discovery
+          - series: STM32F7
+            bsp: stm32f746-st-disco
+          - series: STM32G0
+            bsp: stm32g070-st-nucleo
+          - series: STM32G4
+            bsp: stm32g431-st-nucleo
+          - series: STM32H7
+            bsp: stm32h743-st-nucleo
+          - series: STM32L0
+            bsp: stm32l053-st-nucleo
+          - series: STM32L4
+            bsp: stm32l476-st-nucleo
+
+    steps:
+      - name: Checkout package
+        uses: actions/checkout@v4
+
+      - name: Install host and ARM GCC tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            binutils-arm-none-eabi \
+            ca-certificates \
+            gcc-arm-none-eabi \
+            git \
+            libnewlib-arm-none-eabi \
+            python3 \
+            python3-pip \
+            rsync
+          python3 -m pip install --user scons kconfiglib tqdm || \
+            python3 -m pip install --user --break-system-packages scons kconfiglib tqdm
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Clone RT-Thread and Env
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch "$RTTHREAD_REF" \
+            https://github.com/RT-Thread/rt-thread.git "$GITHUB_WORKSPACE/rt-thread"
+          git clone --depth 1 --branch "$RTTHREAD_ENV_REF" \
+            https://github.com/RT-Thread/env.git "$GITHUB_WORKSPACE/env"
+
+      - name: Prepare BSP, package, and CI config
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          export RTT_ROOT="$GITHUB_WORKSPACE/rt-thread"
+          export RTT_ENV="$GITHUB_WORKSPACE/env"
+          export RTT_CC=gcc
+          export RTT_EXEC_PATH
+          RTT_EXEC_PATH="$(dirname "$(command -v arm-none-eabi-gcc)")"
+          export PATH="$HOME/.local/bin:$RTT_ENV:$PATH"
+
+          BSP_PATH="$RTT_ROOT/bsp/stm32/${{ matrix.bsp }}"
+          test -f "$BSP_PATH/SConstruct"
+          cd "$BSP_PATH"
+
+          log_file="$GITHUB_WORKSPACE/build-${{ matrix.series }}.log"
+          : > "$log_file"
+
+          scons --pyconfig-silent 2>&1 | tee -a "$log_file"
+          if [ ! -f .config ] || [ ! -f rtconfig.h ]; then
+            echo "BSP config generation failed for ${{ matrix.series }}." >&2
+            exit 1
+          fi
+
+          python3 "$RTT_ENV/env.py" package --upgrade 2>&1 | tee -a "$log_file"
+          python3 "$RTT_ENV/env.py" package --update 2>&1 | tee -a "$log_file"
+
+          series_lc="$(printf '%s' '${{ matrix.series }}' | tr '[:upper:]' '[:lower:]')"
+          for header in "${series_lc}xx.h" "${series_lc}xx_hal.h"; do
+            if ! find packages -type f -name "$header" -print -quit | grep -q .; then
+              echo "Required STM32 package header was not fetched: $header" >&2
+              echo "Relevant BSP package symbols:" >&2
+              grep -E '^(PKG_USING_|SOC_SERIES_)' .config rtconfig.h >&2 || true
+              exit 1
+            fi
+          done
+
+          mkdir -p packages
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='rt-thread' \
+            --exclude='env' \
+            "$GITHUB_WORKSPACE/" "packages/$PACKAGE_NAME/"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          rtconfig = Path('rtconfig.h')
+          lines = [line for line in rtconfig.read_text().splitlines()
+                   if line.strip() != '#define PKG_USING_GET_IRQ_PRIORITY']
+          lines.extend([
+              '',
+              '/* CI-only: enable the staged get_irq_priority package. */',
+              '#define PKG_USING_GET_IRQ_PRIORITY',
+          ])
+          rtconfig.write_text('\n'.join(lines) + '\n')
+          PY
+
+      - name: Build RT-Thread BSP with package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          export RTT_ROOT="$GITHUB_WORKSPACE/rt-thread"
+          export RTT_ENV="$GITHUB_WORKSPACE/env"
+          export RTT_CC=gcc
+          export RTT_EXEC_PATH
+          RTT_EXEC_PATH="$(dirname "$(command -v arm-none-eabi-gcc)")"
+          export PATH="$HOME/.local/bin:$RTT_ENV:$PATH"
+
+          BSP_PATH="$RTT_ROOT/bsp/stm32/${{ matrix.bsp }}"
+          cd "$BSP_PATH"
+          scons -j"$(nproc)" 2>&1 | tee -a "$GITHUB_WORKSPACE/build-${{ matrix.series }}.log"
+
+          mapfile -t outputs < <(find . -maxdepth 2 -type f \( -name '*.elf' -o -name '*.bin' \) | sort)
+          if [ "${#outputs[@]}" -eq 0 ]; then
+            echo "No RT-Thread build output was generated for ${{ matrix.series }}." >&2
+            exit 1
+          fi
+          printf '%s\n' "${outputs[@]}"
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ matrix.series }}
+          path: build-${{ matrix.series }}.log
+          if-no-files-found: warn

@@ -15,7 +15,7 @@
 [0]   = "WWDG_IRQn",              /*!< Window WatchDog Interrupt ( wwdg1_it, wwdg2_it)                   */
 #if defined (STM32H7A3xx) ||defined (STM32H7A3xxQ) || defined (STM32H7B3xx) || defined (STM32H7B3xxQ) || defined (STM32H7B0xx)  || defined (STM32H7B0xxQ)
   [1]   = "PVD_PVM_IRQn",           /*!< PVD/PVM through EXTI Line detection Interrupt                     */
-  [2]   = "RTC_TAMP_STAMP_CSS_LSE_IRQn"/*!< Tamper, TimeStamp, CSS and LSE interrupts through the EXTI line*/
+  [2]   = "RTC_TAMP_STAMP_CSS_LSE_IRQn", /*!< Tamper, TimeStamp, CSS and LSE interrupts through the EXTI line*/
 #else
   [1]   = "PVD_AVD_IRQn",           /*!< PVD/AVD through EXTI Line detection Interrupt                     */
   [2]   = "TAMP_STAMP_IRQn",        /*!< Tamper and TimeStamp interrupts through the EXTI line             */
